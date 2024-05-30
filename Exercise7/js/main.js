@@ -37,15 +37,22 @@ var yAxisGroup = g.append("g")
 var flag = true;
 
 d3.json("data/revenues.json").then((data) => {
+    var formattedData = {};
     data.forEach((d) => {
-        d.revenue = +d.revenue;
-        d.profit = +d.profit;
+        formattedData[d.month] = {
+            revenue: +d.revenue,
+            profit: +d.profit
+        };
     });
 
-    update(data);
+    update(formattedData);
 
     d3.interval(() => {
-        update(data);
+        // Simulate missing month in profit data
+        var newData = flag ? formattedData : Object.values(formattedData).slice(1);
+
+        update(newData);
+
         flag = !flag;
     }, 1000);
 
@@ -57,12 +64,12 @@ function update(data) {
     var value = flag ? "revenue" : "profit";
 
     var x = d3.scaleBand()
-        .domain(data.map((d) => d.month))
+        .domain(Object.keys(data))
         .range([0, width])
         .padding(0.2);
 
     var y = d3.scaleLinear()
-        .domain([0, d3.max(data, function(d) { return d[value]; })])
+        .domain([0, d3.max(Object.values(data), function(d) { return d[value]; })])
         .range([height, 0]);
 
     var xAxisCall = d3.axisBottom(x);
@@ -78,16 +85,16 @@ function update(data) {
     yAxisGroup.call(yAxisCall);
 
     var rects = g.selectAll("rect")
-        .data(data);
+        .data(Object.entries(data));
 
     rects.exit().remove();
 
     rects.enter().append("rect")
         .merge(rects)
-        .attr("x", (d) => x(d.month))
-        .attr("y", (d) => y(d[value]))
+        .attr("x", (d) => x(d[0])) // Using the month as the key
+        .attr("y", (d) => y(d[1][value]))
         .attr("width", x.bandwidth())
-        .attr("height", (d) => height - y(d[value]))
+        .attr("height", (d) => height - y(d[1][value]))
         .attr("fill", "yellow");
 
     var label = flag ? "Revenue" : "Profit";
