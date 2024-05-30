@@ -21,6 +21,21 @@
     <div class="container">
         <div class="row">
             <div id="chart-area"></div>  
+            <div id="controls">
+                <button id="play-pause-button">Play</button>
+                <button id="reset-button">Reset</button>
+                <input type="range" id="year-slider" min="1800" max="2020" value="1800">
+                <label for="year-slider" id="slider-label">Year: 1800</label>
+                <select id="continent-filter">
+                    <option value="all">All Continents</option>
+                    <option value="asia">Asia</option>
+                    <option value="africa">Africa</option>
+                    <option value="americas">Americas</option>
+                    <option value="europe">Europe</option>
+                    <option value="oceania">Oceania</option>
+                </select>
+            </div>           
+            
         </div>
     </div>
 
